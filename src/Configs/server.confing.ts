@@ -3,6 +3,8 @@ import session from "express-session";
 import cors from "cors";
 import * as env from "./env";
 
+const isProduction = env.IS_PRODUCTION == "PRODUCTION";
+
 export const corsConfigs = cors({
   origin: env.ORIGIN_PATH,
   methods: ["GET", "POST"],
@@ -17,8 +19,8 @@ export const sessionCoffings = session({
 
   cookie: {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: isProduction ? true : false,
+    sameSite: isProduction ? "none" : "lax",
     maxAge: 1000 * 60 * 60 * 24,
   },
 

@@ -12,5 +12,7 @@ export const ORIGIN_PATH: DB_URL_TYPE = process.env.ORIGIN_PATH;
 
 export const JWT: DB_URL_TYPE = process.env.JWT;
 
+export const IS_PRODUCTION: DB_URL_TYPE = process.env.IS_PRODUCTION;
+
 export const SESSION_SECRET: DB_URL_TYPE =
   process.env.SESSION_SECRET || undefined;
