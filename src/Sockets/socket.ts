@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import Message from "../Models/message.model";
+import * as MessageServiece from "../Services/message.service"
 
 const isOnlineUser = new Map<string, string>();
 
@@ -11,15 +11,30 @@ const initSocket = (io: Server) => {
       console.log("soket id", socket.id, "userId", userId);
       socket.broadcast.emit("user connect", { userId });
     }
-    socket.on("message", async (msg) => {
-      try {
-        const saved = await Message.create(msg);
-        console.log("------------- msg saved", saved._id);
-        socket.broadcast.emit("message", saved);
-      } catch (error) {
-        console.error("Message save error:", error);
-      }
+
+    socket.on("join_room", (chatId: string) => {
+      socket.join(chatId);
+      console.log(`User ${socket.id} joined room: ${chatId}`);
     });
+
+  socket.on("send_message", async (data) => {
+    try {
+      console.log("Receiving message:", data);
+
+      const savedMessage = await MessageServiece.saveToMessage({
+        chatId: data.chatId,
+        senderId: data.senderId,
+        messageType: data.messageType,
+        text: data.text,
+        media: data.media,
+      });
+
+      io.to(data.chatId).emit("receive_message", savedMessage);
+    } catch (error) {
+      console.error("Error processing message:", error);
+      socket.emit("error", { message: "Message could not be sent" });
+    }
+  });
 
     socket.on("disconnect", () => {
       const disconnectedUserId = isOnlineUser.get(socket.id);

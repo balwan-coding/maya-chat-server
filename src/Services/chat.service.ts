@@ -57,7 +57,8 @@ export const fetchChatService = async (userId: string) => {
           select: "name profilePic email",
         },
       })
-      .sort({ updatedAt: -1 });
+      .sort({ updatedAt: -1 })
+      .lean();
 
     return chats;
   } catch (error) {
