@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import * as MessageServiece from "../Services/message.service"
+import * as MessageServiece from "../Services/message.service";
 
 const isOnlineUser = new Map<string, string>();
 
@@ -12,29 +12,32 @@ const initSocket = (io: Server) => {
       socket.broadcast.emit("user connect", { userId });
     }
 
-    socket.on("join_room", (chatId: string) => {
+    socket.on("join_room", async (chatId: string) => {
       socket.join(chatId);
-      console.log(`User ${socket.id} joined room: ${chatId}`);
+      try {
+        const chats = await MessageServiece.getChatHistory(chatId);
+        socket.emit("join_room", chats);
+      } catch (error) {}
     });
 
-  socket.on("send_message", async (data) => {
-    try {
-      console.log("Receiving message:", data);
+    socket.on("send_message", async (data) => {
+      try {
+        console.log("Receiving message:", data);
 
-      const savedMessage = await MessageServiece.saveToMessage({
-        chatId: data.chatId,
-        senderId: data.senderId,
-        messageType: data.messageType,
-        text: data.text,
-        media: data.media,
-      });
-
-      io.to(data.chatId).emit("receive_message", savedMessage);
-    } catch (error) {
-      console.error("Error processing message:", error);
-      socket.emit("error", { message: "Message could not be sent" });
-    }
-  });
+        const savedMessage = await MessageServiece.saveToMessage({
+          chatId: data.chatId,
+          senderId: data.senderId,
+          messageType: data.messageType,
+          text: data.text,
+          media: data.media,
+        });
+        console.log("the new message", savedMessage);
+        io.to(data.chatId).emit("receive_message", savedMessage);
+      } catch (error) {
+        console.error("Error processing message:", error);
+        socket.emit("error", { message: "Message could not be sent" });
+      }
+    });
 
     socket.on("disconnect", () => {
       const disconnectedUserId = isOnlineUser.get(socket.id);
