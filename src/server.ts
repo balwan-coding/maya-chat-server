@@ -16,6 +16,9 @@ const PORT = env.APP_PORT;
 // express json millderware
 app.use(express.json());
 
+// trust proxy milldleware
+app.set("trust proxy", 1);
+
 // cors configs settings
 app.use(corsConfigs);
 
