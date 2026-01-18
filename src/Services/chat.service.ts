@@ -3,7 +3,7 @@ import User from "../Models/user.model";
 
 export const accessChatService = async (
   currentUserId: string,
-  targetUserId: string
+  targetUserId: string,
 ) => {
   let isChat = await Chat.find({
     type: "private",
@@ -19,11 +19,13 @@ export const accessChatService = async (
         path: "senderId",
         select: "name profilePic email",
       },
-    });
+    })
+    .lean();
 
   if (isChat.length > 0) {
     return isChat[0];
   }
+  
   try {
     const chatData = {
       groupName: "sender",
@@ -32,10 +34,16 @@ export const accessChatService = async (
     };
 
     const createChat = await Chat.create(chatData);
-    const fullChat = await Chat.findOne({ _id: createChat._id }).populate(
-      "members",
-      "-password"
-    );
+    const fullChat = await Chat.find({ _id: createChat._id })
+      .populate("members", "-password")
+      .populate({
+        path: "lastMessage",
+        populate: {
+          path: "senderId",
+          select: "name profilePic email",
+        },
+      })
+      .lean();
 
     return fullChat;
   } catch (error) {

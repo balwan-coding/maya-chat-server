@@ -3,7 +3,6 @@ import { createMessageData } from "../types/authTypes";
 
 export const saveToMessage = async (data: createMessageData) => {
   try {
-    console.log("--------------------------- the message data", data);
     const newMessage = new Message({
       chatId: data.chatId,
       text: data.text,
@@ -13,12 +12,8 @@ export const saveToMessage = async (data: createMessageData) => {
       senderId: data.senderId,
     });
 
-    console.log("--------------------- the message data before", newMessage);
     const savedMessage = await newMessage.save();
-    console.log(
-      "--------------------------- the message data after",
-      savedMessage
-    );
+
     const message = await savedMessage.populate([
       { path: "senderId", select: "name , email avatar" },
       { path: "chatId", select: "chatName isGroupChat" },
@@ -31,6 +26,7 @@ export const saveToMessage = async (data: createMessageData) => {
 export const getChatHistory = async (chatId: string) => {
   const chats = await Message.find({ chatId, isDeleted: false })
     .sort({ createdAt: 1 })
+    .limit(15)
     .populate("senderId", "name email avatar");
   return chats;
 };

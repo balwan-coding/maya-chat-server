@@ -14,5 +14,13 @@ export const JWT: DB_URL_TYPE = process.env.JWT;
 
 export const IS_PRODUCTION: DB_URL_TYPE = process.env.IS_PRODUCTION;
 
+export const CLOUDINARY_SERVER_NAME: DB_URL_TYPE =
+  process.env.CLOUDINARY_SERVER_NAME;
+
+export const CLOUDINARY_API_SECRET: DB_URL_TYPE =
+  process.env.CLOUDINARY_API_SECRET;
+
+export const CLOUDINARY_API_KEY: DB_URL_TYPE = process.env.CLOUDINARY_API_KEY;
+
 export const SESSION_SECRET: DB_URL_TYPE =
   process.env.SESSION_SECRET || undefined;

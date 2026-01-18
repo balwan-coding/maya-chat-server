@@ -29,9 +29,9 @@ const messageSchema = new mongoose.Schema(
       url: String,
       fileName: String,
       fileSize: Number,
-      mimeType: String, // image/png, video/mp4
-      duration: Number, // audio/video (seconds)
-      width: Number, // image/video
+      mimeType: String,
+      duration: Number,
+      width: Number,
       height: Number,
     },
 
